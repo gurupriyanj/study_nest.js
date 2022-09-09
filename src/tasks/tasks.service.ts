@@ -24,12 +24,12 @@ export class TasksService {
 
   async createTask(createTasdDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTasdDto;
-    const newTask = await new this.taskModel({
+    const newTask = new this.taskModel({
       title,
       description,
       status: taskStatus.OPEN,
     });
-    newTask.save();
+    await newTask.save();
     return newTask;
   }
 

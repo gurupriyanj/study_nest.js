@@ -12,10 +12,7 @@ config();
       isGlobal: true,
     }),
     TasksModule,
-    MongooseModule.forRoot(
-      // '',
-      process.env.DATABASE_URL,
-    ),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
   ],
 })
 export class AppModule {}
