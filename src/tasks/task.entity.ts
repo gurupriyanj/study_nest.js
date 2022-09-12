@@ -1,11 +1,17 @@
-import * as mongoose from 'mongoose';
 import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
-export const TaskSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  status: { type: String, required: true },
-});
+@Entity()
+export class TaskEntity extends BaseEntity {
+  @ObjectIdColumn()
+  id: ObjectID;
+
+  @Column()
+  title: string;
+  @Column()
+  description: string;
+  @Column()
+  status: string;
+}
 
 export interface Task {
   id: string;

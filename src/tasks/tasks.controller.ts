@@ -36,17 +36,17 @@ export class TasksController {
     return newTask;
   }
 
-  @Get('/:id')
+  @Get(':id')
   async getTaskById(@Param('id') id: string): Promise<Task> {
     return await this.taskService.getTaskById(id);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   async deleteTask(@Param('id') id: string): Promise<void> {
     return await this.taskService.deleteTask(id);
   }
 
-  @Patch('/:id/status')
+  @Patch(':id/status')
   async updateTaskStatus(
     @Param('id') id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,

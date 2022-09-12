@@ -1,18 +1,26 @@
 import { Module } from '@nestjs/common';
-import { TasksModule } from './tasks/tasks.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
+// import { TasksModule } from './tasks/tasks.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from 'dotenv';
+import { AuthModule } from './auth/auth.module';
+import { User } from './auth/user.entity';
 
 config();
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: process.env.DATABASE_URL,
+      synchronize: true,
+      entities: [User],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TasksModule,
-    MongooseModule.forRoot(process.env.DATABASE_URL),
+    // TasksModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
