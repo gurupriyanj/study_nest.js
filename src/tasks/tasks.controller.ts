@@ -55,7 +55,7 @@ export class TasksController {
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ) {
     const { status } = updateTaskStatusDto;
-    console.log(id, '', status);
+
     return await this.taskService.updateTaskById(id, status);
   }
 }

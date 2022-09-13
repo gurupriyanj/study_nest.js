@@ -54,7 +54,6 @@ export class TaskService {
   }
 
   async updateTaskById(id: ObjectID, status: taskStatus) {
-    console.log(id, status);
     const task = await this.getTaskById(id);
     if (!task) {
       throw new Error('Task not found');
