@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserRepository } from './auth.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 
@@ -13,16 +16,24 @@ export class AuthService {
   ) {}
 
   async signup(createUserDto: CreateUserDto): Promise<User> {
-    const { name, email } = createUserDto;
-    const newUser = this.userRepository.create({
-      name,
-      email,
-    });
+    try {
+      const { name, email, password } = createUserDto;
+      const newUser = this.userRepository.create({
+        name,
+        email,
+        password,
+      });
 
-    await newUser.save();
-    console.log('name and email', name, email);
+      await newUser.save();
 
-    return newUser;
+      return newUser;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('Email alredy exists');
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
   //   signin() {}
 }
