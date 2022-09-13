@@ -12,7 +12,7 @@ export class AuthService {
     private userRepository: Repository<User>,
   ) {}
 
-  async signup(createUserDto: CreateUserDto) {
+  async signup(createUserDto: CreateUserDto): Promise<User> {
     const { name, email } = createUserDto;
     const newUser = this.userRepository.create({
       name,
@@ -22,10 +22,7 @@ export class AuthService {
     await newUser.save();
     console.log('name and email', name, email);
 
-    return {
-      message: 'user created',
-      user: newUser,
-    };
+    return newUser;
   }
   //   signin() {}
 }

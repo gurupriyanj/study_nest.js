@@ -10,7 +10,7 @@ export class TaskEntity extends BaseEntity {
   @Column()
   description: string;
   @Column()
-  status: string;
+  status: taskStatus;
 }
 
 export interface Task {
