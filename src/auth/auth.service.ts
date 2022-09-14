@@ -10,16 +10,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { SignInUserDto } from './dto/signIn-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   // Signup User
-  async signup(createUserDto: CreateUserDto): Promise<User> {
+  async signup(createUserDto: CreateUserDto): Promise<any> {
     try {
       const { name, email, password } = createUserDto;
       const salt = await bcrypt.genSalt(10);
@@ -35,7 +38,15 @@ export class AuthService {
       });
 
       await newUser.save();
-      return newUser;
+      if (newUser) {
+        const payload: JwtPayload = { email };
+        const accessToken: string = await this.jwtService.sign(payload);
+
+        return {
+          newUser,
+          accessToken,
+        };
+      }
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Email alredy exists');
@@ -46,7 +57,7 @@ export class AuthService {
     }
   }
 
-  async signIn(signInUserDto: SignInUserDto): Promise<User> {
+  async signIn(signInUserDto: SignInUserDto): Promise<any> {
     try {
       const { email, password } = signInUserDto;
       const user = await this.userRepository.findOneBy({ email });
@@ -55,7 +66,13 @@ export class AuthService {
         throw new UnauthorizedException('User not found');
       }
       if (await bcrypt.compare(password, user?.password)) {
-        return user;
+        const payload: JwtPayload = { email };
+        const accessToken: string = await this.jwtService.sign(payload);
+
+        return {
+          user,
+          accessToken,
+        };
       } else {
         throw new UnauthorizedException('password is incorrect');
       }
