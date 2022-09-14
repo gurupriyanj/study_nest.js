@@ -8,9 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { SignInUserDto } from './dto/signIn-user.dto';
-import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -48,15 +47,22 @@ export class AuthService {
   }
 
   async signIn(signInUserDto: SignInUserDto): Promise<User> {
-    const { email, password } = signInUserDto;
-    const user = await this.userRepository.findOneBy({ email });
-    console.log('password', user.password);
+    try {
+      const { email, password } = signInUserDto;
+      const user = await this.userRepository.findOneBy({ email });
 
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-    if (await bcrypt.compare(password, user.password)) {
-      return user;
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      if (await bcrypt.compare(password, user?.password)) {
+        return user;
+      } else {
+        throw new UnauthorizedException('password is incorrect');
+      }
+    } catch (error) {
+      if (error.status === 401) {
+        throw new UnauthorizedException(error?.message);
+      }
     }
   }
 }
