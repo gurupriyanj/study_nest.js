@@ -60,7 +60,7 @@ export class AuthService {
   async signIn(signInUserDto: SignInUserDto): Promise<any> {
     try {
       const { email, password } = signInUserDto;
-      const user = await this.userRepository.findOneBy({ email });
+      const user: User = await this.userRepository.findOneBy({ email });
 
       if (!user) {
         throw new UnauthorizedException('User not found');

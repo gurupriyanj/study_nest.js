@@ -7,6 +7,7 @@ import { User } from './user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'dotenv';
+import { JwtStrategy } from './jwt.starategy';
 
 config();
 
@@ -14,14 +15,15 @@ config();
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECTET,
+      secret: process.env.JWT_SECRET,
       signOptions: {
         expiresIn: 3600,
       },
     }),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
