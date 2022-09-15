@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { SignInUserDto } from './dto/signIn-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
+import { UserRoles } from './userRole.enum';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,7 @@ export class AuthService {
         name,
         email,
         password: hashedPassword,
+        role: UserRoles.USER,
       });
 
       await newUser.save();

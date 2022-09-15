@@ -1,4 +1,13 @@
-import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { User } from '../auth/user.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  ObjectID,
+  ObjectIdColumn,
+} from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class TaskEntity extends BaseEntity {
@@ -11,14 +20,12 @@ export class TaskEntity extends BaseEntity {
   description: string;
   @Column()
   status: taskStatus;
+
+  @ManyToOne((_type) => User, (user) => user.tasks, { eager: false })
+  @Exclude({ toPlainOnly: true })
+  user: User;
 }
 
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: taskStatus;
-}
 export enum taskStatus {
   OPEN = 'OPEN',
   IN_PROGRESS = 'IN_PROGRESS',
