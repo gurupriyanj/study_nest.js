@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ObjectID, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
@@ -62,7 +62,7 @@ export class AuthService {
   async signIn(signInUserDto: SignInUserDto): Promise<any> {
     try {
       const { email, password } = signInUserDto;
-      const user: User = await this.userRepository.findOneBy({ email });
+      const user = await this.userRepository.findOneBy({ email });
 
       if (!user) {
         throw new UnauthorizedException('User not found');
@@ -83,5 +83,9 @@ export class AuthService {
         throw new UnauthorizedException(error?.message);
       }
     }
+  }
+  async findUserById(id: ObjectID) {
+    const user = await this.userRepository.findOneBy({ id });
+    return user;
   }
 }

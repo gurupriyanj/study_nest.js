@@ -23,7 +23,7 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @OneToMany((_type) => TaskEntity, (task) => task.user, { eager: true })
+  @OneToMany(() => TaskEntity, (task) => task.user, { eager: true })
   tasks: TaskEntity[];
 
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.USER })

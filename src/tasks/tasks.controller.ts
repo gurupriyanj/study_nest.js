@@ -19,13 +19,20 @@ import { TaskService } from './task.service';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user.entity';
+import { RolesGuard } from '../auth/role.guard';
 
-@Controller('tasks')
+import { Roles } from '../auth/role.decorator';
+import { UserRoles } from '../auth/userRole.enum';
+import { Reflector } from '@nestjs/core';
+import { AdminRoleGuard } from '../auth/admin-role.guard';
+
 @UseGuards(AuthGuard())
+@Controller('tasks')
 export class TasksController {
   constructor(private taskService: TaskService) {}
 
   @Get()
+  @UseGuards(AdminRoleGuard)
   async getTasks(
     @Query() filterDto: GetTaskFilterDto,
     @GetUser() user: User,

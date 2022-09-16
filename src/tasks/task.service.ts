@@ -16,7 +16,6 @@ export class TaskService {
 
   async getAllTasks(user: User): Promise<TaskEntity[]> {
     console.log('user', user);
-
     const allTasks = await this.taskRepository.find();
     return allTasks;
   }
