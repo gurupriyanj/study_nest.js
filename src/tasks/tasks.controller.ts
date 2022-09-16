@@ -20,19 +20,17 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user.entity';
 import { RolesGuard } from '../auth/role.guard';
-
 import { Roles } from '../auth/role.decorator';
 import { UserRoles } from '../auth/userRole.enum';
-import { Reflector } from '@nestjs/core';
-import { AdminRoleGuard } from '../auth/admin-role.guard';
 
-@UseGuards(AuthGuard())
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
   constructor(private taskService: TaskService) {}
 
   @Get()
-  @UseGuards(AdminRoleGuard)
+  @UseGuards(RolesGuard)
+  @Roles(UserRoles.ADMIN)
   async getTasks(
     @Query() filterDto: GetTaskFilterDto,
     @GetUser() user: User,
@@ -41,8 +39,6 @@ export class TasksController {
       const newTasks = await this.taskService.getTasksWithFilters(filterDto);
       return newTasks;
     } else {
-      console.log('helloo');
-
       const newTasks = await this.taskService.getAllTasks(user);
       return newTasks;
     }

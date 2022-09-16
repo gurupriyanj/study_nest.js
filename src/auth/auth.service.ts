@@ -70,7 +70,7 @@ export class AuthService {
       if (await bcrypt.compare(password, user?.password)) {
         const payload: JwtPayload = { email };
         const accessToken: string = await this.jwtService.sign(payload);
-
+        console.log('sdhfadhsf', accessToken);
         return {
           user,
           accessToken,
