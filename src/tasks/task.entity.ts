@@ -24,6 +24,9 @@ export class TaskEntity extends BaseEntity {
   @ManyToOne(() => User, (user) => user.tasks, { eager: false })
   @Exclude({ toPlainOnly: true })
   user: User;
+
+  @Column()
+  file: string;
 }
 
 export enum taskStatus {

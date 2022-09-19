@@ -3,11 +3,19 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
+  MaxFileSizeValidator,
+  NotFoundException,
   Param,
+  ParseFilePipe,
+  ParseFilePipeBuilder,
   Patch,
   Post,
   Query,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ObjectID } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -22,14 +30,18 @@ import { User } from '../auth/user.entity';
 import { RolesGuard } from '../auth/role.guard';
 import { Roles } from '../auth/role.decorator';
 import { UserRoles } from '../auth/userRole.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { of } from 'rxjs';
+import { unlink, unlinkSync } from 'fs';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
   constructor(private taskService: TaskService) {}
-
-  @Get()
   @UseGuards(RolesGuard)
+  @Get()
   @Roles(UserRoles.ADMIN)
   async getTasks(
     @Query() filterDto: GetTaskFilterDto,
@@ -70,5 +82,44 @@ export class TasksController {
     const { status } = updateTaskStatusDto;
 
     return await this.taskService.updateTaskById(id, status);
+  }
+
+  @Post('fileupload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now();
+          const ext = extname(file.originalname);
+          const filename = `${uniqueSuffix}${ext}`;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  fileUpload(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({
+          maxSize: 1000,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ): any {
+    return file;
+  }
+
+  @Get('downloadfile/:filename')
+  findFile(@Param('filename') filename, @Res() res): any {
+    return this.taskService.findFile(filename, res);
+  }
+
+  @Delete('deletefile/:filename')
+  async deleteFile(@Param('filename') filename): Promise<any> {
+    return this.taskService.deleteFile(filename);
   }
 }

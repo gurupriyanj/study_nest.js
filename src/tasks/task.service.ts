@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../auth/user.entity';
 
@@ -6,6 +6,9 @@ import { ObjectID, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTaskFilterDto } from './dto/get-taskFilter.dto';
 import { TaskEntity, taskStatus } from './task.entity';
+import { of } from 'rxjs';
+import { join } from 'path';
+import { unlinkSync } from 'fs';
 
 @Injectable()
 export class TaskService {
@@ -64,5 +67,16 @@ export class TaskService {
     task.status = status;
     await this.taskRepository.save(task);
     return task;
+  }
+  async findFile(filename: string, res: any) {
+    return of(res.sendFile(join(process.cwd(), 'uploads/' + filename)));
+  }
+  async deleteFile(filename: string): Promise<any> {
+    try {
+      unlinkSync(`./uploads/${filename}`);
+      return `${filename} is deleted successfullly`;
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 }

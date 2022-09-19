@@ -6,6 +6,7 @@ import { config } from 'dotenv';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/user.entity';
 import { TaskEntity } from './tasks/task.entity';
+import { MulterModule } from '@nestjs/platform-express';
 
 config();
 
@@ -19,6 +20,9 @@ config();
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    MulterModule.register({
+      dest: './uploads',
     }),
     TasksModule,
     AuthModule,
