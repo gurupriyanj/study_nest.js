@@ -3,17 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
-  MaxFileSizeValidator,
-  NotFoundException,
   Param,
-  ParseFilePipe,
-  ParseFilePipeBuilder,
   Patch,
   Post,
   Query,
   Res,
-  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -31,11 +25,9 @@ import { User } from '../auth/user.entity';
 import { RolesGuard } from '../auth/role.guard';
 import { Roles } from '../auth/role.decorator';
 import { UserRoles } from '../auth/userRole.enum';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
-import { of } from 'rxjs';
-import { unlink, unlinkSync } from 'fs';
+import { extname } from 'path';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
@@ -87,7 +79,7 @@ export class TasksController {
   @Post('fileupload')
   @UseInterceptors(
     AnyFilesInterceptor({
-      limits: { fileSize: 1000 },
+      limits: { fileSize: 1000000000 },
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
@@ -99,16 +91,18 @@ export class TasksController {
       }),
     }),
   )
-  // FileInterceptor('file'),
   fileUpload(@UploadedFiles() file: Array<Express.Multer.File>): any {
     console.log(file, 'djhhj');
-
     return file;
   }
 
   @Get('downloadfile/:filename')
-  findFile(@Param('filename') filename, @Res() res): any {
-    return this.taskService.findFile(filename, res);
+  async findFile(@Param('filename') filename, @Res() res): Promise<any> {
+    const file = await this.taskService.findFile(filename, res);
+    if (!file) {
+      return 'not found';
+    }
+    return file;
   }
 
   @Delete('deletefile/:filename')

@@ -69,7 +69,11 @@ export class TaskService {
     return task;
   }
   async findFile(filename: string, res: any): Promise<any> {
-    return of(res.sendFile(join(process.cwd(), 'uploads/' + filename)));
+    const file = of(res.sendFile(join(process.cwd(), 'uploads/' + filename)));
+    if (!file) {
+      return 'not';
+    }
+    return file;
   }
   async deleteFile(filename: string): Promise<any> {
     try {
@@ -79,7 +83,9 @@ export class TaskService {
         filename: filename,
       };
     } catch (error) {
-      throw new NotFoundException(error.message);
+      throw new NotFoundException(
+        `file ${filename} not found || ${error.message}`,
+      );
     }
   }
 }
