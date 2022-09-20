@@ -59,7 +59,7 @@ export class TaskService {
     await this.taskRepository.delete(id);
   }
 
-  async updateTaskById(id: ObjectID, status: taskStatus) {
+  async updateTaskById(id: ObjectID, status: taskStatus): Promise<TaskEntity> {
     const task = await this.getTaskById(id);
     if (!task) {
       throw new Error('Task not found');
@@ -68,13 +68,16 @@ export class TaskService {
     await this.taskRepository.save(task);
     return task;
   }
-  async findFile(filename: string, res: any) {
+  async findFile(filename: string, res: any): Promise<any> {
     return of(res.sendFile(join(process.cwd(), 'uploads/' + filename)));
   }
   async deleteFile(filename: string): Promise<any> {
     try {
       unlinkSync(`./uploads/${filename}`);
-      return `${filename} is deleted successfullly`;
+      return {
+        message: `${filename} is deleted successfullly`,
+        filename: filename,
+      };
     } catch (error) {
       throw new NotFoundException(error.message);
     }

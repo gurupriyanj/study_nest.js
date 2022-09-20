@@ -14,6 +14,7 @@ import {
   Query,
   Res,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -30,7 +31,7 @@ import { User } from '../auth/user.entity';
 import { RolesGuard } from '../auth/role.guard';
 import { Roles } from '../auth/role.decorator';
 import { UserRoles } from '../auth/userRole.enum';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { of } from 'rxjs';
@@ -83,10 +84,10 @@ export class TasksController {
 
     return await this.taskService.updateTaskById(id, status);
   }
-
   @Post('fileupload')
   @UseInterceptors(
-    FileInterceptor('file', {
+    AnyFilesInterceptor({
+      limits: { fileSize: 1000 },
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
@@ -98,18 +99,10 @@ export class TasksController {
       }),
     }),
   )
-  fileUpload(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({
-          maxSize: 1000,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
-    file: Express.Multer.File,
-  ): any {
+  // FileInterceptor('file'),
+  fileUpload(@UploadedFiles() file: Array<Express.Multer.File>): any {
+    console.log(file, 'djhhj');
+
     return file;
   }
 
