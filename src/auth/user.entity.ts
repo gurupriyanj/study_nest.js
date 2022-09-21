@@ -6,8 +6,11 @@ import {
   ObjectIdColumn,
   ObjectID,
   OneToMany,
+  BeforeInsert,
+  AfterInsert,
 } from 'typeorm';
 import { UserRoles } from './userRole.enum';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User extends BaseEntity {
@@ -28,4 +31,10 @@ export class User extends BaseEntity {
 
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.USER })
   role: string;
+
+  @BeforeInsert()
+  async hashPassword() {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
 }

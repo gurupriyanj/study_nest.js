@@ -4,7 +4,6 @@ import { TasksController } from './tasks.controller';
 import { TaskService } from './task.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskEntity } from './task.entity';
-import { AuthModule } from '../auth/auth.module';
 
 import { PassportModule } from '@nestjs/passport';
 
@@ -12,7 +11,6 @@ import { PassportModule } from '@nestjs/passport';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([TaskEntity]),
-    AuthModule,
   ],
   controllers: [TasksController],
   providers: [TaskService],
