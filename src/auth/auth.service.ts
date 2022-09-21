@@ -58,14 +58,12 @@ export class AuthService {
     try {
       const { email, password } = signInUserDto;
       const user = await this.userRepository.findOneBy({ email });
-
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
       if (await bcrypt.compare(password, user?.password)) {
         const payload: JwtPayload = { email };
         const accessToken: string = await this.jwtService.sign(payload);
-        console.log('sdhfadhsf', accessToken);
         return {
           user,
           accessToken,
@@ -74,7 +72,7 @@ export class AuthService {
         throw new UnauthorizedException('password is incorrect');
       }
     } catch (error) {
-      if (error.status === 401) {
+      if (error?.status === 401) {
         throw new UnauthorizedException(error?.message);
       }
     }

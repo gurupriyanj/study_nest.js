@@ -92,7 +92,6 @@ export class TasksController {
     }),
   )
   fileUpload(@UploadedFiles() file: Array<Express.Multer.File>): any {
-    console.log(file, 'djhhj');
     return file;
   }
 

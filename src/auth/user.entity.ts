@@ -7,7 +7,6 @@ import {
   ObjectID,
   OneToMany,
   BeforeInsert,
-  AfterInsert,
 } from 'typeorm';
 import { UserRoles } from './userRole.enum';
 import * as bcrypt from 'bcrypt';

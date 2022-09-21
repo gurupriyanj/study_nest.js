@@ -18,7 +18,6 @@ export class TaskService {
   ) {}
 
   async getAllTasks(user: User): Promise<TaskEntity[]> {
-    console.log('user', user);
     const allTasks = await this.taskRepository.find();
     return allTasks;
   }
@@ -50,9 +49,7 @@ export class TaskService {
   }
 
   async getTaskById(id: ObjectID): Promise<TaskEntity> {
-    console.log('id', id);
     const task = await this.taskRepository.findOneById(id);
-    console.log('data', task);
     return task;
   }
   async deleteTask(id: ObjectID): Promise<void> {
