@@ -79,7 +79,7 @@ export class TasksController {
   @Post('fileupload')
   @UseInterceptors(
     AnyFilesInterceptor({
-      limits: { fileSize: 1000000000 },
+      limits: { fileSize: 100000 },
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {

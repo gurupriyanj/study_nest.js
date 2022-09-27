@@ -7,9 +7,10 @@ async function bootstrap() {
   const logger = new Logger();
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  // app.useGlobalInterceptors(new TransformInterceptor());
   const port = 3000;
   await app.listen(process.env.PORT || port);
   logger.log(`server listening on port${process.env.PORT}`);
 }
 bootstrap();
+
+// app.useGlobalInterceptors(new TransformInterceptor());
