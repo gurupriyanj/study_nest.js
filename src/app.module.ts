@@ -7,22 +7,23 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './auth/user.entity';
 import { TaskEntity } from './tasks/task.entity';
 import { MulterModule } from '@nestjs/platform-express';
+import { appConfig } from './config/app.config';
+import { DatabaseConfig } from './config/database.config';
 
 config();
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: process.env.DATABASE_URL,
-      synchronize: true,
-      entities: [User, TaskEntity],
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [appConfig],
     }),
     MulterModule.register({
       dest: './uploads',
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useClass: DatabaseConfig,
     }),
     TasksModule,
     AuthModule,
